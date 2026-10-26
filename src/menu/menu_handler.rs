@@ -73,6 +73,7 @@ impl Menu {
         let click1 = window.is_key_pressed(Key::Key1, KeyRepeat::No);
         let click2 = window.is_key_pressed(Key::Key2, KeyRepeat::No);
         let click3 = window.is_key_pressed(Key::Key3, KeyRepeat::No);
+        let click4 = window.is_key_pressed(Key::Key4, KeyRepeat::No);
 
         // Render titles
         Self::draw_text_centered(
@@ -167,6 +168,12 @@ impl Menu {
             return AppState::Quit;
         }
 
+
+        if self.draw_flat_button (buffer, &btn_key_bindings, mx, my) && clicked || click4 {
+            //Eine Seite laden, bei der man in Textfeldern z.B. die Keys ändern kann
+            todo!();
+        }
+
         // Keep looping in the menu until an action changes the state
         AppState::StartScreen
     }
@@ -236,6 +243,7 @@ impl Menu {
         let click1 = window.is_key_pressed(Key::Key1, KeyRepeat::No);
         let click2 = window.is_key_pressed(Key::Key2, KeyRepeat::No);
         let click3 = window.is_key_pressed(Key::Key3, KeyRepeat::No);
+        let click4 = window.is_key_pressed(Key::Key4, KeyRepeat::No);
 
         Self::draw_text_centered(
             buffer,
@@ -297,7 +305,7 @@ impl Menu {
             return AppState::GamePaused;
         }
 
-        if self.draw_flat_button(buffer, &btn_menu, mx, my) && clicked {
+        if self.draw_flat_button(buffer, &btn_menu, mx, my) && clicked || click4{
             return AppState::StartScreen;
         }
 
