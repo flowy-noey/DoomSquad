@@ -131,6 +131,14 @@ impl Menu {
             text: "[ESC] QUIT GAME".to_string(),
         };
 
+        let btn_key_bindings = ButtonDef {
+            x: 230,
+            y: 440, //Immer siebzig px vertikaler Abstand
+            w: 340,
+            h: 50,
+            text: "[4] KEY BINDINGS".to_string(),
+        };
+
         // Interaction processing
         if self.draw_flat_button(buffer, &btn_start, mx, my) && clicked || click1 {
             *game = Game::new_game(renderer_data).unwrap(); // ! this unwrap is intentionally accepted
