@@ -58,7 +58,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut game = game::Game::new_game(&renderer_data).unwrap();
     let mut audio = Audio::init();
     let mut menu = Menu::new();
-    //let mut key_binding_menu = Menu::new();
 
     let mut app_state = AppState::StartScreen;
 

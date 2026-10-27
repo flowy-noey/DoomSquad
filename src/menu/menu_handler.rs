@@ -323,6 +323,32 @@ impl Menu {
         renderer_data: &RendererData,
         audio: &mut Audio,
         ) -> AppState {
+            // Clear the buffer from the previous frame
+            buffer.fill(COL_BG_MAIN);
+            let (mx, my, clicked) = self.get_mouse_state(window);
+
+            // Render titles
+            Self::draw_text_centered(
+                buffer,
+                SCREEN_WIDTH,
+                SCREEN_HEIGHT,
+                "DOOMSQUAD",
+                50,
+                6,
+                COL_TITLE_RED,
+            );
+            Self::draw_text_centered(
+                buffer,
+                SCREEN_WIDTH,
+                SCREEN_HEIGHT,
+                "KEY BINDING MENU",
+                105,
+                2,
+                COL_TEXT_WHITE,
+            );
+
+
+
             AppState::KeyBindings
     }
 
