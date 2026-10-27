@@ -13,7 +13,8 @@ use crate::game::gamestate::Game;
 use crate::render::RendererData;
 
 const SCREEN_WIDTH: usize = 800;
-const SCREEN_HEIGHT: usize = 450;
+//70 Pixel dazu, weil Höhe eines Buttons 70 ist
+const SCREEN_HEIGHT: usize = 520;
 
 const COL_BG_MAIN: u32 = 0x111111;
 const COL_BG_GAMEOVER: u32 = 0x330000;

@@ -14,7 +14,7 @@ use std::f64::consts::PI;
 use std::time::Instant;
 
 const SCREEN_WIDTH: usize = 800;
-const SCREEN_HEIGHT: usize = 450;
+const SCREEN_HEIGHT: usize = 520;
 const TARGET_FPS: usize = 30;
 const HORIZONTAL_FOV: f64 = PI / 2.0;
 const BACKGROUND_COLOR: u32 = 0x444444;
