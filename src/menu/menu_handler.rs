@@ -32,6 +32,7 @@ pub enum AppState {
     GameOver,
     GamePaused,
     Quit,
+    KeyBindings,
 }
 
 /// Simple layout container for button definitions.
@@ -172,7 +173,7 @@ impl Menu {
 
         if self.draw_flat_button (buffer, &btn_key_bindings, mx, my) && clicked || click4 {
             //Eine Seite laden, bei der man in Textfeldern z.B. die Keys ändern kann
-            todo!();
+            return AppState::KeyBindings;
         }
 
         // Keep looping in the menu until an action changes the state
@@ -312,6 +313,20 @@ impl Menu {
 
         AppState::GamePaused
     }
+
+
+    pub fn update_and_draw_key_binding_menu (
+        &mut self,
+        window: &mut Window,
+        buffer: &mut [u32],
+        game: &mut Game,
+        renderer_data: &RendererData,
+        audio: &mut Audio,
+        ) -> AppState {
+            AppState::KeyBindings
+    }
+
+
 
     /// Fetches mouse coordinates and performs edge detection (debouncing) for left-clicks.
     fn get_mouse_state(&mut self, window: &Window) -> (usize, usize, bool) {

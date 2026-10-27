@@ -58,6 +58,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut game = game::Game::new_game(&renderer_data).unwrap();
     let mut audio = Audio::init();
     let mut menu = Menu::new();
+    //let mut key_binding_menu = Menu::new();
 
     let mut app_state = AppState::StartScreen;
 
@@ -131,6 +132,25 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             AppState::Quit => {
                 break;
             }
+
+            AppState::KeyBindings => {
+                window.set_cursor_visibility(true);
+
+                if escape_clicked {
+                    app_state = AppState::StartScreen;
+                } else {
+                    //Hier menu oder key_binding_menu updaten?
+                    app_state = menu.update_and_draw_key_binding_menu(
+                        &mut window,
+                        &mut buffer,
+                        &mut game,
+                        &renderer_data,
+                        &mut audio,
+                    );
+                }
+            }
+
+
         }
 
         if let Err(e) = window.update_with_buffer(&buffer, SCREEN_WIDTH, SCREEN_HEIGHT) {
