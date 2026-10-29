@@ -7,6 +7,8 @@
 use font8x8::{BASIC_FONTS, UnicodeFonts};
 use minifb::{Key, KeyRepeat, MouseButton, MouseMode, Window};
 use std::fs;
+//geht hier auch menu?
+use super::key_bindings::KeyBindingList;
 
 use crate::audio::audio_handler::Audio;
 use crate::game::gamestate::Game;
@@ -347,7 +349,48 @@ impl Menu {
                 COL_TEXT_WHITE,
             );
 
+            let bindings = KeyBindingList::load("src/bindings.ron").expect("ron Datei konnte nicht geladen werden.");
 
+            for (action, key) in &bindings.key_bindings {
+                println!("Button: {action} | Taste: {key}");
+            }
+
+            /*
+            let file = path "";
+
+            let num_lines = 9;
+            let num_col = 2;
+
+            let y_distace = 50;
+
+            let mut x_pos = 100;
+            let x_distance = 150;
+
+
+            for i in file.key_bindings[0] {
+                for j in num_col {
+                    let mut y_pos = 100;
+
+                    for k in num_lines {
+
+                        //Eine buttonliste machen?
+                        let btn = ButtonDef {
+                        x: x_pos,
+                        y: y_pos,
+                        w: 100,
+                        h: 30,
+                        text: i.to_string(),
+                        };
+
+                        if self.draw_flat_button(buffer, &btn, mx, my) && clicked{
+                            todo!();
+                        }
+
+                        y_pos += y_distance;
+                    }
+                    x_pos += x_distance;
+                }
+            }  */
 
             AppState::KeyBindings
     }

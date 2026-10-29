@@ -1,4 +1,5 @@
 use super::map::Map;
+use serde::{Serialize, Deserialize};
 use crate::game::generate_entities::generate_entities;
 use crate::game::player::LastInputDirection::*;
 use crate::{
@@ -52,6 +53,7 @@ const MOUSE_SENSE_X: f64 = 0.003;
 const MOUSE_SENSE_Y: f64 = 0.003;
 const AIM_MODE_SLOWDOWN: f64 = 0.1;
 const MOUSE_ENABLED: bool = false;
+
 
 #[derive(Clone, PartialEq, Eq)]
 pub enum LastInputDirection {

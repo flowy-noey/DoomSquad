@@ -1,0 +1,22 @@
+(
+    key_bindings : [
+        ("Forwards", "w"),
+        ("BACKWARDS", "s"),
+        ("SPRINT", "shift"),
+        ("CROUCH", "c"),
+        ("INTERACT", "f"),
+        ("MOVE CROSSHAIR DOWN", "arrows down"),
+        ("TURN RIGHT", "arrows right"),
+        ("FIRE BULLET", "right control"),
+        ("ENTER GODMODE", "g"),
+        ("LEFT", "a"),
+        ("RIGHT", "d"),
+        ("JUMP", "space"),
+        ("ROCKET JUMP", "r"),
+        ("MOVE CROSSHAIR UP", "arrows up"),
+        ("TURN LEFT", "arrows left"),
+        ("TOGGLE FINE AIMING", "e"),
+        ("FIRE ARROW", "right shift"),
+        ("LOCK ALL ENEMIES", "l"),
+    ],
+)
