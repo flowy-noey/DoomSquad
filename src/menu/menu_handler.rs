@@ -351,46 +351,40 @@ impl Menu {
 
             let bindings = KeyBindingList::load("src/bindings.ron").expect("ron Datei konnte nicht geladen werden.");
 
+            let mut counter = 1;
+
+            let mut y_pos = 150;
+            let y_distace = 40;
+            let mut x_pos = 50;
+            let x_distance = 350;
+
             for (action, key) in &bindings.key_bindings {
-                println!("Button: {action} | Taste: {key}");
+            
+                //draw buttons
+                let btn = ButtonDef {
+                x: x_pos,
+                y: y_pos,
+                w: 300,
+                h: 30,
+                text: format!("{action}: {key}"),
+                };
+
+                if self.draw_flat_button(buffer, &btn, mx, my) && clicked{
+                    todo!();
+                }
+
+                
+                counter += 1;
+
+                y_pos += y_distace;
+
+                if counter > 9 {
+                    counter = 1;
+                    x_pos += x_distance;
+                    y_pos -= 9 * y_distace;
+                }
             }
 
-            /*
-            let file = path "";
-
-            let num_lines = 9;
-            let num_col = 2;
-
-            let y_distace = 50;
-
-            let mut x_pos = 100;
-            let x_distance = 150;
-
-
-            for i in file.key_bindings[0] {
-                for j in num_col {
-                    let mut y_pos = 100;
-
-                    for k in num_lines {
-
-                        //Eine buttonliste machen?
-                        let btn = ButtonDef {
-                        x: x_pos,
-                        y: y_pos,
-                        w: 100,
-                        h: 30,
-                        text: i.to_string(),
-                        };
-
-                        if self.draw_flat_button(buffer, &btn, mx, my) && clicked{
-                            todo!();
-                        }
-
-                        y_pos += y_distance;
-                    }
-                    x_pos += x_distance;
-                }
-            }  */
 
             AppState::KeyBindings
     }
