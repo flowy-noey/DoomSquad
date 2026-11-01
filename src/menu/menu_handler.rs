@@ -355,23 +355,35 @@ impl Menu {
 
             let mut y_pos = 150;
             let y_distace = 40;
-            let mut x_pos = 50;
-            let x_distance = 350;
+            let mut x_pos = 20;
+            let x_distance = 400;
 
             for (action, key) in &bindings.key_bindings {
             
-                //draw buttons
+                
+                //draw buttons and labels
                 let btn = ButtonDef {
-                x: x_pos,
+                x: x_pos + 195,
                 y: y_pos,
-                w: 300,
+                w: 170,
                 h: 30,
-                text: format!("{action}: {key}"),
+                text: key.to_string(),
                 };
 
                 if self.draw_flat_button(buffer, &btn, mx, my) && clicked{
                     todo!();
                 }
+
+                Self::draw_text(
+                    buffer, 
+                    SCREEN_WIDTH,
+                    SCREEN_HEIGHT,
+                    action, 
+                    x_pos,
+                    y_pos+7,
+                    2,
+                    COL_TEXT_WHITE,
+                );
 
                 
                 counter += 1;
