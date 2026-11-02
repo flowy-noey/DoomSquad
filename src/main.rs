@@ -65,10 +65,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     while window.is_open() {
         let escape_clicked = window.is_key_pressed(Key::Escape, KeyRepeat::No);
+        let mut previous_state = AppState::StartScreen;
 
         match app_state {
             AppState::StartScreen => {
                 window.set_cursor_visibility(true);
+                previous_state = AppState::StartScreen;
 
                 if escape_clicked {
                     break;
@@ -85,7 +87,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             AppState::Playing => {
                 window.set_cursor_visibility(false);
-
+               
                 if escape_clicked {
                     app_state = AppState::GamePaused;
                 } else if game.player.hp <= 0.0 {
@@ -107,6 +109,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             AppState::GamePaused => {
                 window.set_cursor_visibility(true);
+                previous_state = AppState::GamePaused;
 
                 if escape_clicked {
                     app_state = AppState::StartScreen;
@@ -122,6 +125,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
             AppState::GameOver => {
                 window.set_cursor_visibility(true);
+                previous_state = AppState::GameOver;
 
                 if escape_clicked {
                     app_state = AppState::StartScreen;
@@ -138,7 +142,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 window.set_cursor_visibility(true);
 
                 if escape_clicked {
-                    app_state = AppState::StartScreen;
+                    app_state = previous_state;
                 } else {
                     //Hier menu oder key_binding_menu updaten?
                     app_state = menu.update_and_draw_key_binding_menu(

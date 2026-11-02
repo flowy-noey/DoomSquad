@@ -178,7 +178,6 @@ impl Menu {
 
 
         if self.draw_flat_button (buffer, &btn_key_bindings, mx, my) && clicked || click4 {
-            //Eine Seite laden, bei der man in Textfeldern z.B. die Keys ändern kann
             return AppState::KeyBindings;
         }
 
@@ -197,6 +196,7 @@ impl Menu {
 
         let (mx, my, clicked) = self.get_mouse_state(window);
         let click1 = window.is_key_pressed(Key::Key1, KeyRepeat::No);
+        let click4 = window.is_key_pressed(Key::Key4, KeyRepeat::No);
 
         Self::draw_text_centered(
             buffer,
@@ -223,6 +223,14 @@ impl Menu {
             text: "[ESC] MAIN MENU".to_string(),
         };
 
+        let btn_key_bindings = ButtonDef {
+            x: 230,
+            y: 380, //Immer achzig px vertikaler Abstand
+            w: 340,
+            h: 60,
+            text: "[4] KEY BINDINGS".to_string(),
+        };
+
         if self.draw_flat_button(buffer, &btn_save, mx, my) && clicked || click1 {
             // Persist the current level index to disk so it can be loaded later
             let _ = fs::write("savegame.txt", game.map_index.to_string());
@@ -231,6 +239,10 @@ impl Menu {
 
         if self.draw_flat_button(buffer, &btn_menu, mx, my) && clicked {
             return AppState::StartScreen;
+        }
+
+        if self.draw_flat_button (buffer, &btn_key_bindings, mx, my) && clicked || click4 {
+            return AppState::KeyBindings;
         }
 
         AppState::GameOver
@@ -252,6 +264,7 @@ impl Menu {
         let click2 = window.is_key_pressed(Key::Key2, KeyRepeat::No);
         let click3 = window.is_key_pressed(Key::Key3, KeyRepeat::No);
         let click4 = window.is_key_pressed(Key::Key4, KeyRepeat::No);
+        //let esc = window.is_key_pressed(Key::Escape, KeyRepeat::No);
 
         Self::draw_text_centered(
             buffer,
@@ -298,6 +311,14 @@ impl Menu {
             text: "[ESC] MAIN MENU".to_string(),
         };
 
+        let btn_key_bindings = ButtonDef {
+            x: 230,
+            y: 390, //Immer sechzig px vertikaler Abstand
+            w: 340,
+            h: 50,
+            text: "[4] KEY BINDINGS".to_string(),
+        };
+
         if self.draw_flat_button(buffer, &btn_resume, mx, my) && clicked || click1 {
             // Simply return to the Playing state without touching the game object to resume seamlessly
             return AppState::Playing;
@@ -312,10 +333,16 @@ impl Menu {
             audio.set_muted(!audio.is_muted);
             return AppState::GamePaused;
         }
-
-        if self.draw_flat_button(buffer, &btn_menu, mx, my) && clicked || click4{
+        
+        if self.draw_flat_button(buffer, &btn_menu, mx, my) && clicked {
             return AppState::StartScreen;
         }
+        
+
+        if self.draw_flat_button (buffer, &btn_key_bindings, mx, my) && clicked || click4 {
+            return AppState::KeyBindings;
+        }
+        
 
         AppState::GamePaused
     }
@@ -420,7 +447,6 @@ impl Menu {
                     y_pos -= 9 * y_distace;
                 }
             }
-
 
             AppState::KeyBindings
     }
