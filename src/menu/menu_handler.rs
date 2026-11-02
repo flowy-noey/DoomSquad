@@ -52,6 +52,7 @@ struct ButtonDef {
 pub struct Menu {
     was_mouse_down: bool,
     waiting_for_key: Option<String>,
+    bindings: KeyBindingList,
 }
 
 impl Menu {
@@ -59,6 +60,7 @@ impl Menu {
         Self {
             was_mouse_down: false,
             waiting_for_key: None,
+            bindings: KeyBindingList::load("src/bindings.ron").expect("Ron Datei konnte nicht geladen werden."),
         }
     }
 
@@ -331,6 +333,27 @@ impl Menu {
             buffer.fill(COL_BG_MAIN);
             let (mx, my, clicked) = self.get_mouse_state(window);
 
+            //take() setzt self.waiting_for_key auf None
+            if let Some(action) = self.waiting_for_key.take() {
+                if let Some(key) = window.get_keys_pressed(KeyRepeat::No).first() {
+                    self.waiting_for_key = None;
+
+                    let key_name = format!("{:?}", key);
+
+                    if let Err(e) = self.bindings.change_key(&action, &key_name) {
+                        eprintln!("Change key failed: {}", e);
+                    }
+                    
+                    if let Err(e) = self.bindings.save("src/bindings.ron") {
+                        eprintln!("Save failed {e}");
+                    }
+                }
+                else {
+                    self.waiting_for_key = Some(action.clone());
+                }
+            }
+
+
             // Render titles
             Self::draw_text_centered(
                 buffer,
@@ -351,28 +374,6 @@ impl Menu {
                 COL_TEXT_WHITE,
             );
 
-            let mut bindings = KeyBindingList::load("src/bindings.ron").expect("ron Datei konnte nicht geladen werden.");
-
-            //take() setzt self.waiting_for_key auf None
-            if let Some(action) = self.waiting_for_key.take() {
-                if let Some(key) = window.get_keys_pressed(KeyRepeat::No).first() {
-                    self.waiting_for_key = None;
-
-                    let key_name = format!("{:?}", key);
-
-                    if let Err(e) = bindings.change_key(&action, &key_name) {
-                        eprintln!("Change key failed: {}", e);
-                    }
-                    
-                    if let Err(e) = bindings.save("src/bindings.ron") {
-                        eprintln!("Save failed {e}");
-                    }
-                }
-                else {
-                    self.waiting_for_key = Some(action.clone());
-                }
-            }
-
             let mut counter = 1;
 
             let mut y_pos = 150;
@@ -380,7 +381,7 @@ impl Menu {
             let mut x_pos = 20;
             let x_distance = 400;
 
-            for (action, key) in &bindings.key_bindings {
+            for (action, key) in &self.bindings.key_bindings {
             
                 
                 //draw buttons and labels

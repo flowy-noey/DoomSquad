@@ -1,10 +1,4 @@
-use std::fmt::format;
-
 use serde::{Deserialize, Serialize};
-//use std::collections::HashMap;
-//use std::fs;
-//use std::path::Path;
-
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct KeyBindingList {
@@ -28,7 +22,7 @@ impl KeyBindingList {
     }
 
     pub fn change_key(&mut self, action: &str, key: &str,) -> Result<(), String> {
-        if !Self::key_valid(key) {
+        if !self.key_valid(key) {
             return Err(format!("Invalid key: {}", key));
         }
         let binding = self.key_bindings
@@ -44,8 +38,10 @@ impl KeyBindingList {
         
     }
 
-    pub fn key_valid(key: &str) -> bool {
-        !key.is_empty()
+    pub fn key_valid(&self, key: &str) -> bool {
+
+        return !key.is_empty() 
+            && !self.key_bindings.iter().any(|(_, k)| k == key);
     }
     //pub fn get_key_to_action(action: &str) -> Result<&str, Box<dyn std::error::Error>>
 }
