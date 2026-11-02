@@ -1,15 +1,9 @@
 use std::{fs, path::Path};
 
 use crate::{
-    audio::audio_handler::Audio,
-    game::{
-        entities::{Entity, EntityEvent::*},
-        entity_behaviour::death_behaviour,
-        interactables::Interactable,
-        map_grid::MapGrid,
-    },
-    parser::map_parser::parse_map,
-    render::RendererData,
+    audio::audio_handler::Audio, game::{
+        self, entities::{Entity, EntityEvent::*}, entity_behaviour::death_behaviour, interactables::Interactable, map_grid::MapGrid,
+    }, menu::key_bindings::KeyBindingList, parser::map_parser::parse_map, render::RendererData,
 };
 
 use super::map::Map;
@@ -36,10 +30,12 @@ pub struct Game {
     pub projectile_that_hit: Vec<usize>,
     pub map_index: usize,
     pub last_map_index: usize,
+    pub bindings: KeyBindingList,
 }
 
 impl Game {
     pub fn new_game(renderer_data: &RendererData) -> Option<Self> {
+        
         let path = Path::new("assets/maps/ggb");
         let entries_result = fs::read_dir(path);
         let mut entries: Vec<_> = match entries_result {
@@ -73,6 +69,8 @@ impl Game {
                 projectile_that_hit: Vec::new(),
                 map_index: 0,
                 last_map_index: 0,
+                bindings: KeyBindingList::load("src/bindings.ron")
+                    .expect("Ron Datei konnte nicht gelesen werden"),
             };
 
             Some(game)
@@ -95,7 +93,7 @@ impl Game {
 
         let mut entity_spawns = Vec::new();
         //update player
-        let event = self.player.update(window, &self.map, renderer_data, audio);
+        let event = self.player.update(window, &self.map, renderer_data, audio, &self.bindings);
         //add possible spawn events
         entity_spawns.extend(event);
 

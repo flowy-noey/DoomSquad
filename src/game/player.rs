@@ -1,5 +1,6 @@
 use super::map::Map;
 use serde::{Serialize, Deserialize};
+use crate::menu::key_bindings::KeyBindingList;
 use crate::game::generate_entities::generate_entities;
 use crate::game::player::LastInputDirection::*;
 use crate::{
@@ -173,6 +174,7 @@ impl Player {
         map: &Map,
         renderer_data: &RendererData,
         audio: &mut Audio,
+        bindings: &KeyBindingList,
     ) -> Vec<EntityEvent> {
         let mut events: Vec<EntityEvent> = Vec::new();
         //reseting keyinput idfk how to do it an other way
@@ -289,8 +291,9 @@ impl Player {
         }
 
         let mut step_successful: bool = false;
-
-        if (window.is_key_down(Key::W)
+        //(window.is_key_down(Key::W)
+        //BEZEICHNER MÜSSEN EXAKT MIT RON DATEI ÜBEREINSTIMMEN
+        if (bindings.is_action_down(window, "FORWARDS")
             && ((!self.is_sliding && !self.is_jumping) || self.last_input == W))
             || (self.is_jumping && (self.last_input == W))
         {
@@ -371,7 +374,7 @@ impl Player {
             audio.play_sfx("slide", 1.0);
             self.move_speed += 5.0;
             self.is_sliding = true;
-            self.save_input(window);
+            self.save_input(window, bindings);
         }
 
         //during slide speed decreases
@@ -444,7 +447,7 @@ impl Player {
                 self.rocketlauncher_cooldown = ROCKETLAUNCHER_COOLDOWN_TIME;
             }
 
-            self.save_input(window);
+            self.save_input(window, bindings);
         }
 
         //Rocketlauncher cooldwon
@@ -549,14 +552,14 @@ impl Player {
         events
     }
 
-    fn save_input(&mut self, window: &Window) {
+    fn save_input(&mut self, window: &Window, bindings: &KeyBindingList) {
         if window.is_key_down(Key::D) {
             self.last_input = D;
         } else if window.is_key_down(Key::A) {
             self.last_input = A;
         } else if window.is_key_down(Key::S) {
             self.last_input = S;
-        } else if window.is_key_down(Key::W) {
+        } else if bindings.is_action_down(window, "FORWARDS") {
             self.last_input = W;
         } else {
             self.last_input = No

@@ -9,6 +9,7 @@ mod render;
 use crate::audio::audio_handler::Audio;
 use crate::menu::menu_handler::{AppState, Menu};
 use crate::render::{RendererData, render_init};
+use crate::menu::key_bindings::KeyBindingList;
 use minifb::{Key, KeyRepeat, Window, WindowOptions};
 use std::f64::consts::PI;
 use std::time::Instant;
@@ -54,6 +55,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         BLOCK_DEFAULT_COLOR,
         SURFACE_DEFAULT_COLOR,
     );
+
 
     let mut game = game::Game::new_game(&renderer_data).unwrap();
     let mut audio = Audio::init();

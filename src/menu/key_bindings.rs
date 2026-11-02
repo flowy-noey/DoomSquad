@@ -1,4 +1,7 @@
 use serde::{Deserialize, Serialize};
+use minifb::Key;
+use minifb::Window;
+use std::str::FromStr;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct KeyBindingList {
@@ -43,6 +46,48 @@ impl KeyBindingList {
         return !key.is_empty() 
             && !self.key_bindings.iter().any(|(_, k)| k == key);
     }
+
+    //wird gedrückt gehalten
+    pub fn is_action_pressed(&self, window: &Window, action: &str) -> bool {
+        let key = self.key_bindings.iter()
+            .find(|(a, _)| a == action)
+            .map(|(_, key)| key);
+
+        let Some(key) = key else {
+            return false;
+        };
+
+        window.get_keys_pressed(minifb::KeyRepeat::No)
+            .iter()
+            .any(|pressed| format!("{:?}", pressed) == *key)
+        
+    }
+
+    //wird einmal runtergedrückt
+    pub fn is_action_down(&self, window: &Window, action: &str) -> bool {
+        let key = self.key_bindings.iter()
+            .find(|(a, _)| a == action)
+            .map(|(_, key)| key);
+
+        let Some(key) = key else {
+            return false;
+        };
+        
+        window.get_keys().iter()
+            .any(|down| format!("{:?}", down) == *key)
+    }
+
+
+    /*
+    pub fn get_key(&self, action: &str) -> Option<Key> {
+        self.key_bindings
+            .iter()
+            .find(|(a, _)| a == action)
+            .unwrap().1;
+            //unschön 
+    }
+    */
+
     //pub fn get_key_to_action(action: &str) -> Result<&str, Box<dyn std::error::Error>>
 }
 

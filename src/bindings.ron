@@ -1,6 +1,6 @@
 (
     key_bindings: [
-        ("Forwards", "W"),
+        ("FORWARDS", "W"),
         ("BACKWARDS", "S"),
         ("SPRINT", "LeftShift"),
         ("CROUCH", "C"),
