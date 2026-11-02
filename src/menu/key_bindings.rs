@@ -1,3 +1,5 @@
+use std::fmt::format;
+
 use serde::{Deserialize, Serialize};
 //use std::collections::HashMap;
 //use std::fs;
@@ -24,6 +26,28 @@ impl KeyBindingList {
         std::fs::write(path, content)?;
         Ok(())
     }
+
+    pub fn change_key(&mut self, action: &str, key: &str,) -> Result<(), String> {
+        if !Self::key_valid(key) {
+            return Err(format!("Invalid key: {}", key));
+        }
+        let binding = self.key_bindings
+                                                        .iter_mut()
+                                                        .find(|(a, _)| a == action);
+        match binding {
+            Some((_, current_key)) => {
+                *current_key = key.to_string();
+                Ok(())
+            }
+            None => Err(format!("Action not found: {}", action)),
+        }
+        
+    }
+
+    pub fn key_valid(key: &str) -> bool {
+        !key.is_empty()
+    }
+    //pub fn get_key_to_action(action: &str) -> Result<&str, Box<dyn std::error::Error>>
 }
 
 /*

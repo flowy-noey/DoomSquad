@@ -51,12 +51,14 @@ struct ButtonDef {
 /// we only need to manually track the mouse state for edge detection (clicks).
 pub struct Menu {
     was_mouse_down: bool,
+    waiting_for_key: Option<String>,
 }
 
 impl Menu {
     pub fn new() -> Self {
         Self {
             was_mouse_down: false,
+            waiting_for_key: None,
         }
     }
 
@@ -349,7 +351,27 @@ impl Menu {
                 COL_TEXT_WHITE,
             );
 
-            let bindings = KeyBindingList::load("src/bindings.ron").expect("ron Datei konnte nicht geladen werden.");
+            let mut bindings = KeyBindingList::load("src/bindings.ron").expect("ron Datei konnte nicht geladen werden.");
+
+            //take() setzt self.waiting_for_key auf None
+            if let Some(action) = self.waiting_for_key.take() {
+                if let Some(key) = window.get_keys_pressed(KeyRepeat::No).first() {
+                    self.waiting_for_key = None;
+
+                    let key_name = format!("{:?}", key);
+
+                    if let Err(e) = bindings.change_key(&action, &key_name) {
+                        eprintln!("Change key failed: {}", e);
+                    }
+                    
+                    if let Err(e) = bindings.save("src/bindings.ron") {
+                        eprintln!("Save failed {e}");
+                    }
+                }
+                else {
+                    self.waiting_for_key = Some(action.clone());
+                }
+            }
 
             let mut counter = 1;
 
@@ -362,19 +384,7 @@ impl Menu {
             
                 
                 //draw buttons and labels
-                let btn = ButtonDef {
-                x: x_pos + 195,
-                y: y_pos,
-                w: 170,
-                h: 30,
-                text: key.to_string(),
-                };
-
-                if self.draw_flat_button(buffer, &btn, mx, my) && clicked{
-                    todo!();
-                }
-
-                Self::draw_text(
+                 Self::draw_text(
                     buffer, 
                     SCREEN_WIDTH,
                     SCREEN_HEIGHT,
@@ -385,7 +395,20 @@ impl Menu {
                     COL_TEXT_WHITE,
                 );
 
-                
+                let btn = ButtonDef {
+                x: x_pos + 195,
+                y: y_pos,
+                w: 170,
+                h: 30,
+                text: key.to_string(),
+                };
+
+                if self.draw_flat_button(buffer, &btn, mx, my) && clicked{
+                    self.waiting_for_key = Some(action.clone());
+                    //damit wird automatisch beim drücken einer taste die taste in der ron datei geändert
+                    //sehr schlecht programmiert, weil seiteneffekt und variable hat zu viel macht, sehr schlecht, wenn vergessen wird zurückzusetzen
+                }
+
                 counter += 1;
 
                 y_pos += y_distace;

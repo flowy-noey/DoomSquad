@@ -1,5 +1,5 @@
 (
-    key_bindings : [
+    key_bindings: [
         ("Forwards", "W"),
         ("BACKWARDS", "S"),
         ("SPRINT", "LeftShift"),
