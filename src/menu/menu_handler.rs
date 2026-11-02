@@ -7,6 +7,7 @@
 use font8x8::{BASIC_FONTS, UnicodeFonts};
 use minifb::{Key, KeyRepeat, MouseButton, MouseMode, Window};
 use std::fs;
+use std::rc::Rc;
 //geht hier auch menu?
 use super::key_bindings::KeyBindingList;
 
@@ -55,7 +56,7 @@ struct ButtonDef {
 pub struct Menu {
     was_mouse_down: bool,
     waiting_for_key: Option<String>,
-    bindings: KeyBindingList,
+    //bindings: &KeyBindingList,
 }
 
 impl Menu {
@@ -63,7 +64,7 @@ impl Menu {
         Self {
             was_mouse_down: false,
             waiting_for_key: None,
-            bindings: game_bindings.clone(),
+            //bindings: game_bindings,
         }
     }
 
@@ -370,11 +371,11 @@ impl Menu {
 
                     let key_name = format!("{:?}", key);
 
-                    if let Err(e) = self.bindings.change_key(&action, &key_name) {
+                    if let Err(e) = game.bindings.change_key(&action, &key_name) {
                         eprintln!("Change key failed: {}", e);
                     }
                     
-                    if let Err(e) = self.bindings.save("src/bindings.ron") {
+                    if let Err(e) = game.bindings.save("src/bindings.ron") {
                         eprintln!("Save failed {e}");
                     }
                 }
@@ -411,7 +412,8 @@ impl Menu {
             let mut x_pos = 20;
             let x_distance = 400;
 
-            for (action, key) in &self.bindings.key_bindings {
+
+            for (action, key) in &game.bindings.key_bindings {
             
                 
                 //draw buttons and labels

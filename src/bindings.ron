@@ -1,13 +1,13 @@
 (
     key_bindings: [
-        ("FORWARDS", "Q"),
+        ("FORWARDS", "W"),
         ("BACKWARDS", "S"),
         ("SPRINT", "LeftShift"),
         ("CROUCH", "C"),
         ("INTERACT", "F"),
         ("AIM DOWN", "Down"),
         ("TURN RIGHT", "Right"),
-        ("FIRE BULLET", "N"),
+        ("FIRE BULLET", "RightCtrl"),
         ("GODMODE", "G"),
         ("LEFT", "A"),
         ("RIGHT", "D"),
@@ -16,7 +16,7 @@
         ("AIM UP", "Up"),
         ("TURN LEFT", "Left"),
         ("FINE AIMING", "E"),
-        ("FIRE ARROW", "M"),
+        ("FIRE ARROW", "RightShift"),
         ("LOCK ENEMIES", "L"),
     ],
 )
