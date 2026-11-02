@@ -28,6 +28,9 @@ const COL_BTN_HOVER: u32 = 0xAA0000;
 const COL_TEXT_WHITE: u32 = 0xFFFFFF;
 
 /// Dictates the high-level routing in the `main.rs` loop.
+
+
+#[derive(Debug, Clone, Copy)]
 pub enum AppState {
     StartScreen,
     Playing,
@@ -56,11 +59,11 @@ pub struct Menu {
 }
 
 impl Menu {
-    pub fn new() -> Self {
+    pub fn new(game_bindings: &KeyBindingList) -> Self {
         Self {
             was_mouse_down: false,
             waiting_for_key: None,
-            bindings: KeyBindingList::load("src/bindings.ron").expect("Ron Datei konnte nicht geladen werden."),
+            bindings: game_bindings.clone(),
         }
     }
 

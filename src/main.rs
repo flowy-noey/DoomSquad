@@ -59,13 +59,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut game = game::Game::new_game(&renderer_data).unwrap();
     let mut audio = Audio::init();
-    let mut menu = Menu::new();
+    let mut menu = Menu::new(&game.bindings);
 
     let mut app_state = AppState::StartScreen;
+    let mut previous_state = AppState::StartScreen;
 
     while window.is_open() {
         let escape_clicked = window.is_key_pressed(Key::Escape, KeyRepeat::No);
-        let mut previous_state = AppState::StartScreen;
 
         match app_state {
             AppState::StartScreen => {
@@ -126,7 +126,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             AppState::GameOver => {
                 window.set_cursor_visibility(true);
                 previous_state = AppState::GameOver;
-
+                
                 if escape_clicked {
                     app_state = AppState::StartScreen;
                 } else {
@@ -142,7 +142,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 window.set_cursor_visibility(true);
 
                 if escape_clicked {
-                    app_state = previous_state;
+                    app_state = previous_state.clone();
                 } else {
                     //Hier menu oder key_binding_menu updaten?
                     app_state = menu.update_and_draw_key_binding_menu(
