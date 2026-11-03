@@ -7,9 +7,6 @@
 use font8x8::{BASIC_FONTS, UnicodeFonts};
 use minifb::{Key, KeyRepeat, MouseButton, MouseMode, Window};
 use std::fs;
-use std::rc::Rc;
-//geht hier auch menu?
-use super::key_bindings::KeyBindingList;
 
 use crate::audio::audio_handler::Audio;
 use crate::game::gamestate::Game;
@@ -60,7 +57,7 @@ pub struct Menu {
 }
 
 impl Menu {
-    pub fn new(game_bindings: &KeyBindingList) -> Self {
+    pub fn new() -> Self {
         Self {
             was_mouse_down: false,
             waiting_for_key: None,
@@ -357,18 +354,18 @@ impl Menu {
         window: &mut Window,
         buffer: &mut [u32],
         game: &mut Game,
-        renderer_data: &RendererData,
-        audio: &mut Audio,
+        keys_pressed: &[minifb::Key],
+        //renderer_data: &RendererData,
+        //audio: &mut Audio,
         ) -> AppState {
             // Clear the buffer from the previous frame
             buffer.fill(COL_BG_MAIN);
             let (mx, my, clicked) = self.get_mouse_state(window);
 
             //take() setzt self.waiting_for_key auf None
-            if let Some(action) = self.waiting_for_key.take() {
-                if let Some(key) = window.get_keys_pressed(KeyRepeat::No).first() {
-                    self.waiting_for_key = None;
-
+            if let Some(action) = &self.waiting_for_key {
+                if let Some(key) = keys_pressed.first() {
+                    
                     let key_name = format!("{:?}", key);
 
                     if let Err(e) = game.bindings.change_key(&action, &key_name) {
@@ -378,9 +375,11 @@ impl Menu {
                     if let Err(e) = game.bindings.save("src/bindings.ron") {
                         eprintln!("Save failed {e}");
                     }
+
+                    self.waiting_for_key = None;
                 }
                 else {
-                    self.waiting_for_key = Some(action.clone());
+                    //self.waiting_for_key = Some(action.clone());
                 }
             }
 
@@ -452,6 +451,7 @@ impl Menu {
                     y_pos -= 9 * y_distace;
                 }
             }
+
 
             AppState::KeyBindings
     }

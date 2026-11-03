@@ -79,7 +79,15 @@ impl Game {
         }
     }
 
-    pub fn update(&mut self, window: &Window, renderer_data: &RendererData, audio: &mut Audio) {
+    pub fn update(
+        &mut self,
+        window: &Window,
+        renderer_data:
+        &RendererData,
+        audio: &mut Audio,
+        keys_pressed: &[minifb::Key],
+        keys_down: &[minifb::Key]) {
+
         //update all interactables and add possible spawn events
         let mut interactables = std::mem::take(&mut self.interactables);
         let mut interactables_spawns = Vec::new();
@@ -93,13 +101,13 @@ impl Game {
 
         let mut entity_spawns = Vec::new();
         //update player
-        let event = self.player.update(window, &self.map, renderer_data, audio, &self.bindings);
+        let event = self.player.update(window, &self.map, renderer_data, audio, &self.bindings, &keys_pressed, &keys_down);
         //add possible spawn events
         entity_spawns.extend(event);
 
         //update all entites and add possible spawn events
         for entity in &mut self.entities {
-            let event = entity.update(window, &self.map, &self.player.mover, renderer_data, audio, &self.bindings);
+            let event = entity.update(window, &self.map, &self.player.mover, renderer_data, audio, &self.bindings, &keys_pressed);
             entity_spawns.extend(event);
         }
 

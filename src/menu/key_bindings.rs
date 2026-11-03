@@ -1,7 +1,5 @@
 use serde::{Deserialize, Serialize};
 use minifb::Key;
-use minifb::Window;
-use std::str::FromStr;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct KeyBindingList {
@@ -47,8 +45,8 @@ impl KeyBindingList {
             && !self.key_bindings.iter().any(|(_, k)| k == key);
     }
 
-    //wird gedrückt gehalten
-    pub fn is_action_pressed(&self, window: &Window, action: &str) -> bool {
+    //wird einmal gedrückt
+    pub fn is_action_pressed(&self, keys_pressed: &[minifb::Key], action: &str) -> bool {
         let key = self.key_bindings.iter()
             .find(|(a, _)| a == action)
             .map(|(_, key)| key);
@@ -57,14 +55,14 @@ impl KeyBindingList {
             return false;
         };
 
-        window.get_keys_pressed(minifb::KeyRepeat::No)
+        keys_pressed
             .iter()
             .any(|pressed| format!("{:?}", pressed) == *key)
         
     }
 
-    //wird einmal runtergedrückt
-    pub fn is_action_down(&self, window: &Window, action: &str) -> bool {
+    //wird gedrückt gehalten
+    pub fn is_action_down(&self, keys_down: &[minifb::Key], action: &str) -> bool {
         let key = self.key_bindings.iter()
             .find(|(a, _)| a == action)
             .map(|(_, key)| key);
@@ -73,46 +71,13 @@ impl KeyBindingList {
             return false;
         };
         
-        window.get_keys().iter()
+        keys_down
+            .iter()
             .any(|down| format!("{:?}", down) == *key)
     }
 
-
-    /*
-    pub fn get_key(&self, action: &str) -> Option<Key> {
-        self.key_bindings
-            .iter()
-            .find(|(a, _)| a == action)
-            .unwrap().1;
-            //unschön 
-    }
-    */
-
-    //pub fn get_key_to_action(action: &str) -> Result<&str, Box<dyn std::error::Error>>
 }
 
-/*
-pub struct KeyBindings {
-    forwards: String,
-    backwards: String,
-    sprint: String,
-    crouch: String,
-    interact: String,
-    move_crosshair_down: String,
-    turn_right: String,
-    fire_bullet: String,
-    godmode: String,
-    main_menu: String,
-    left: String,
-    right: String,
-    jump: String,
-    move_crosshair_up: String,
-    turn_left: String,
-    fine_aiming: String,
-    fire_arrow: String,
-    lock_enemies: String,
-}
 
-*/
 
 

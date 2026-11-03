@@ -7,7 +7,7 @@
         ("INTERACT", "F"),
         ("AIM DOWN", "Down"),
         ("TURN RIGHT", "Right"),
-        ("FIRE BULLET", "RightCtrl"),
+        ("FIRE BULLET", "LeftCtrl"),
         ("GODMODE", "G"),
         ("LEFT", "A"),
         ("RIGHT", "D"),

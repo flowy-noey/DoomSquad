@@ -1,5 +1,4 @@
 use super::map::Map;
-use serde::{Serialize, Deserialize};
 use crate::menu::key_bindings::KeyBindingList;
 use crate::game::generate_entities::generate_entities;
 use crate::game::player::LastInputDirection::*;
@@ -21,7 +20,7 @@ use crate::{
     game::{map::Point, movement::Mover},
     render::RendererData,
 };
-use minifb::{Key, KeyRepeat, MouseButton, MouseMode, Window};
+use minifb::{MouseButton, MouseMode, Window};
 use std::f64::consts::PI;
 
 const ROTATION_SPEED_MOUSE: f64 = 2.0;
@@ -175,23 +174,25 @@ impl Player {
         renderer_data: &RendererData,
         audio: &mut Audio,
         bindings: &KeyBindingList,
+        keys_pressed: &[minifb::Key],
+        keys_down: &[minifb::Key],
     ) -> Vec<EntityEvent> {
         let mut events: Vec<EntityEvent> = Vec::new();
         //reseting keyinput idfk how to do it an other way
         self.interacting = false;
-        if bindings.is_action_pressed(window, "INTERACT") {
+        if bindings.is_action_pressed(keys_pressed, "INTERACT") {
             self.interacting = true;
         }
 
         //swap between aim_mode and not, during aim mode sense is lowered
-        if bindings.is_action_pressed(window, "FINE AIMING") {
+        if bindings.is_action_pressed(keys_pressed, "FINE AIMING") {
             match self.aim_mode {
                 true => self.aim_mode = false,
                 false => self.aim_mode = true,
             }
         }
 
-        if (bindings.is_action_pressed(window, "FIRE BULLET")
+        if (bindings.is_action_pressed(keys_pressed, "FIRE BULLET")
             || (window.get_mouse_down(MouseButton::Left) && MOUSE_ENABLED))
             && self.bullet_cooldown == 0
         {
@@ -215,7 +216,7 @@ impl Player {
         }
 
         //shooting, generates arrow entity and gives it as a spawn event to gamestate
-        if (bindings.is_action_pressed(window, "FIRE ARROW")
+        if (bindings.is_action_pressed(keys_pressed, "FIRE ARROW")
             || (window.get_mouse_down(MouseButton::Right) && MOUSE_ENABLED))
             && self.arrow_cooldown == 0
         {
@@ -255,7 +256,7 @@ impl Player {
             self.update_dir();
         }
 
-        if bindings.is_action_down(window, "TURN LEFT") {
+        if bindings.is_action_down(keys_down, "TURN LEFT") {
             //during slide heavily restricted rotation
             let rotation_factor = match self.is_sliding || self.is_jumping {
                 true => match self.using_rocketlauncher {
@@ -273,7 +274,7 @@ impl Player {
             self.update_dir();
         }
 
-        if bindings.is_action_down(window, "TURN RIGHT") {
+        if bindings.is_action_down(keys_down, "TURN RIGHT") {
             //during slide heavily restricted rotation
             let rotation_factor = match self.is_sliding || self.is_jumping {
                 true => match self.using_rocketlauncher {
@@ -293,13 +294,13 @@ impl Player {
         let mut step_successful: bool = false;
         
         //BEZEICHNER MÜSSEN EXAKT MIT RON DATEI ÜBEREINSTIMMEN
-        if (bindings.is_action_down(window, "FORWARDS")
+        if (bindings.is_action_down(keys_down, "FORWARDS")
             && ((!self.is_sliding && !self.is_jumping) || self.last_input == W))
             || (self.is_jumping && (self.last_input == W))
         {
             step_successful = self.mover.step(self.move_speed, 0.0, map, self.godmode);
         }
-        if (bindings.is_action_down(window, "LEFT")
+        if (bindings.is_action_down(keys_down, "LEFT")
             && ((!self.is_sliding && !self.is_jumping) || self.last_input == A))
             || (self.is_jumping && (self.last_input == A))
         {
@@ -307,7 +308,7 @@ impl Player {
                 .mover
                 .step(self.move_speed, -PI / 2.0, map, self.godmode);
         }
-        if (bindings.is_action_down(window, "RIGHT")
+        if (bindings.is_action_down(keys_down, "RIGHT")
             && ((!self.is_sliding && !self.is_jumping) || self.last_input == D))
             || (self.is_jumping && (self.last_input == D))
         {
@@ -316,7 +317,7 @@ impl Player {
                 .step(self.move_speed, PI / 2.0, map, self.godmode);
         }
 
-        if (bindings.is_action_down(window, "BACKWARDS")
+        if (bindings.is_action_down(keys_down, "BACKWARDS")
             && ((!self.is_sliding && !self.is_jumping) || self.last_input == S))
             || (self.is_jumping && (self.last_input == S))
         {
@@ -333,21 +334,21 @@ impl Player {
         }
 
         //god mode controls (not relevant for user)
-        if bindings.is_action_down(window, "JUMP") && self.godmode {
+        if bindings.is_action_down(keys_down, "JUMP") && self.godmode {
             self.mover.foot_level += FLY_UP_DOWN_SPEED;
         }
 
-        if bindings.is_action_down(window, "SPRINT") && self.godmode {
+        if bindings.is_action_down(keys_down, "SPRINT") && self.godmode {
             self.mover.foot_level -= FLY_UP_DOWN_SPEED;
         }
 
         //slowdown movespeed if not sprinting and sliding anymore
-        if !bindings.is_action_down(window, "SPRINT") && !self.is_jumping && !self.is_sliding {
+        if !bindings.is_action_down(keys_down, "SPRINT") && !self.is_jumping && !self.is_sliding {
             self.move_speed = MOVE_SPEED;
         }
 
         //implementing Sprint that gradually increases movement speed
-        if bindings.is_action_down(window, "SPRINT") && !self.godmode {
+        if bindings.is_action_down(keys_down, "SPRINT") && !self.godmode {
             if self.move_speed < SPRINT_SPEED - 0.1 {
                 self.move_speed += 0.1;
             }
@@ -361,11 +362,11 @@ impl Player {
         }
 
         //slide has cooldown
-        if (self.slide_cooldown > 0) && !bindings.is_action_down(window, "CROUCH") {
+        if (self.slide_cooldown > 0) && !bindings.is_action_down(keys_down, "CROUCH") {
             self.slide_cooldown -= 1;
         }
         //init slide gives speed boost
-        if bindings.is_action_down(window, "CROUCH")
+        if bindings.is_action_down(keys_down, "CROUCH")
             && !self.is_sliding
             && !self.godmode
             && self.slide_cooldown == 0
@@ -374,7 +375,7 @@ impl Player {
             audio.play_sfx("slide", 1.0);
             self.move_speed += 5.0;
             self.is_sliding = true;
-            self.save_input(window, bindings);
+            self.save_input(window, bindings, keys_down);
         }
 
         //during slide speed decreases
@@ -384,7 +385,7 @@ impl Player {
 
         //ending slide (either cause not pressed or slowed down)
         #[allow(clippy::nonminimal_bool)]
-        if (!bindings.is_action_down(window, "CROUCH") && self.is_sliding)
+        if (!bindings.is_action_down(keys_down, "CROUCH") && self.is_sliding)
             || ((self.move_speed <= SPRINT_SPEED) && self.is_sliding)
         {
             self.is_sliding = false;
@@ -409,12 +410,12 @@ impl Player {
         };
 
         //jumping init
-        if (bindings.is_action_pressed(window, "JUMP")
+        if (bindings.is_action_pressed(keys_pressed, "JUMP")
             && ((!self.is_jumping
                 && (self.mover.foot_level - self.mover.floor_level).abs()
                     < DISTANCE_TO_FLOOR_WHILE_ALLOWED_JUMPING)
                 || self.jumping_allowed))
-            || bindings.is_action_pressed(window, "ROCKET JUMP")
+            || bindings.is_action_pressed(keys_pressed, "ROCKET JUMP")
         {
             self.gravity = GRAVITY_CONST;
             self.is_jumping = true;
@@ -425,7 +426,7 @@ impl Player {
                 self.move_speed += 3.0;
             }
             //normal jump init
-            if bindings.is_action_pressed(window, "JUMP") {
+            if bindings.is_action_pressed(keys_pressed, "JUMP") {
                 audio.play_sfx("jump", 1.0);
 
                 self.move_speed += self.move_speed * JUMP_SPEED_BOOST_MULTIPLICATOR;
@@ -435,7 +436,7 @@ impl Player {
             }
 
             //rocketlauncher
-            if bindings.is_action_pressed(window, "ROCKET JUMP") && (self.rocketlauncher_cooldown == 0) {
+            if bindings.is_action_pressed(keys_pressed, "ROCKET JUMP") && (self.rocketlauncher_cooldown == 0) {
                 audio.play_sfx("rocketlauncher", 1.0);
 
                 self.using_rocketlauncher = true;
@@ -447,7 +448,7 @@ impl Player {
                 self.rocketlauncher_cooldown = ROCKETLAUNCHER_COOLDOWN_TIME;
             }
 
-            self.save_input(window, bindings);
+            self.save_input(window, bindings, keys_down);
         }
 
         //Rocketlauncher cooldwon
@@ -475,7 +476,7 @@ impl Player {
             }
         }
 
-        if bindings.is_action_pressed(window, "GODMODE") {
+        if bindings.is_action_pressed(keys_pressed, "GODMODE") {
             self.godmode = !self.godmode;
         }
 
@@ -525,7 +526,7 @@ impl Player {
         }
 
         //aim (inverted controls because pixel grid is inverted too)
-        if bindings.is_action_down(window, "AIM UP") {
+        if bindings.is_action_down(keys_down, "AIM UP") {
             match self.aim_mode {
                 false => {
                     self.vertcal_aim = (self.vertcal_aim - VERTICAL_AIM_SPEED).clamp(-1.0, 1.0)
@@ -537,7 +538,7 @@ impl Player {
             }
         }
 
-        if bindings.is_action_down(window, "AIM DOWN") {
+        if bindings.is_action_down(keys_down, "AIM DOWN") {
             match self.aim_mode {
                 false => {
                     self.vertcal_aim = (self.vertcal_aim + VERTICAL_AIM_SPEED).clamp(-1.0, 1.0)
@@ -552,14 +553,14 @@ impl Player {
         events
     }
 
-    fn save_input(&mut self, window: &Window, bindings: &KeyBindingList) {
-        if bindings.is_action_down(window, "RIGHT") {
+    fn save_input(&mut self, window: &Window, bindings: &KeyBindingList, keys_down: &[minifb::Key]) {
+        if bindings.is_action_down(keys_down, "RIGHT") {
             self.last_input = D;
-        } else if bindings.is_action_down(window, "LEFT") {
+        } else if bindings.is_action_down(keys_down, "LEFT") {
             self.last_input = A;
-        } else if bindings.is_action_down(window, "BACKWARDS") {
+        } else if bindings.is_action_down(keys_down, "BACKWARDS") {
             self.last_input = S;
-        } else if bindings.is_action_down(window, "FORWARDS") {
+        } else if bindings.is_action_down(keys_down, "FORWARDS") {
             self.last_input = W;
         } else {
             self.last_input = No

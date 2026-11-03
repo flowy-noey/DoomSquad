@@ -9,7 +9,6 @@ mod render;
 use crate::audio::audio_handler::Audio;
 use crate::menu::menu_handler::{AppState, Menu};
 use crate::render::{RendererData, render_init};
-use crate::menu::key_bindings::KeyBindingList;
 use minifb::{Key, KeyRepeat, Window, WindowOptions};
 use std::f64::consts::PI;
 use std::time::Instant;
@@ -59,13 +58,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut game = game::Game::new_game(&renderer_data).unwrap();
     let mut audio = Audio::init();
-    let mut menu = Menu::new(&game.bindings);
+    let mut menu = Menu::new();
 
     let mut app_state = AppState::StartScreen;
     let mut previous_state = AppState::StartScreen;
 
     while window.is_open() {
         let escape_clicked = window.is_key_pressed(Key::Escape, KeyRepeat::No);
+        let keys_pressed = window.get_keys_pressed(KeyRepeat::No);
+        let keys_down = window.get_keys();
 
         match app_state {
             AppState::StartScreen => {
@@ -93,7 +94,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 } else if game.player.hp <= 0.0 {
                     app_state = AppState::GameOver;
                 } else {
-                    game.update(&window, &renderer_data, &mut audio);
+                    game.update(&window, &renderer_data, &mut audio, &keys_pressed, &keys_down);
                     render::draw_screen(&mut buffer, &renderer_data, &game);
 
                     frame_count += 1;
@@ -149,8 +150,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         &mut window,
                         &mut buffer,
                         &mut game,
-                        &renderer_data,
-                        &mut audio,
+                        &keys_pressed,
+                        //&renderer_data,
+                        //&mut audio,
                     );
                 }
             }

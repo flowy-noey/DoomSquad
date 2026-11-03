@@ -1,4 +1,4 @@
-use minifb::{Key, Window};
+use minifb::{Window};
 
 use crate::audio::audio_handler::Audio;
 use crate::game::entities::EntityType::*;
@@ -200,10 +200,12 @@ impl Entity {
         renderer_data: &RendererData,
         audio: &mut Audio,
         bindings: &KeyBindingList,
+        keys_pressed: &[minifb::Key],
     ) -> Vec<EntityEvent> {
+
         //collect all Spawn events for gamestate
         let mut events: Vec<EntityEvent> = Vec::new();
-        if bindings.is_action_pressed(window, "LOCK ENEMIES") {
+        if bindings.is_action_pressed(keys_pressed, "LOCK ENEMIES") {
             self.movement_locked = !self.movement_locked;
         }
 
