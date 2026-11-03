@@ -47,9 +47,7 @@ impl KeyBindingList {
 
     //wird einmal gedrückt
     pub fn is_action_pressed(&self, keys_pressed: &[minifb::Key], action: &str) -> bool {
-        let key = self.key_bindings.iter()
-            .find(|(a, _)| a == action)
-            .map(|(_, key)| key);
+        let key = self.get_key_to_action(action);
 
         let Some(key) = key else {
             return false;
@@ -63,9 +61,7 @@ impl KeyBindingList {
 
     //wird gedrückt gehalten
     pub fn is_action_down(&self, keys_down: &[minifb::Key], action: &str) -> bool {
-        let key = self.key_bindings.iter()
-            .find(|(a, _)| a == action)
-            .map(|(_, key)| key);
+        let key = self.get_key_to_action(action);
 
         let Some(key) = key else {
             return false;
@@ -74,6 +70,12 @@ impl KeyBindingList {
         keys_down
             .iter()
             .any(|down| format!("{:?}", down) == *key)
+    }
+
+    pub fn get_key_to_action(&self, action: &str) -> Option<&String>{
+        self.key_bindings.iter()
+            .find(|(a, _)| a == action)
+            .map(|(_, key)| key)
     }
 
 }

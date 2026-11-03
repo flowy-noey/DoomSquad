@@ -64,10 +64,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut previous_state = AppState::StartScreen;
 
     while window.is_open() {
-        let escape_clicked = window.is_key_pressed(Key::Escape, KeyRepeat::No);
         let keys_pressed = window.get_keys_pressed(KeyRepeat::No);
         let keys_down = window.get_keys();
-
+        let escape_clicked = game.bindings.is_action_pressed(&keys_pressed, "EXIT");
+        
         match app_state {
             AppState::StartScreen => {
                 window.set_cursor_visibility(true);

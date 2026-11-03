@@ -133,12 +133,13 @@ impl Menu {
             text: audio_text.to_string(),
         };
 
+        let exit = game.bindings.get_key_to_action("EXIT").map(String::as_str).unwrap_or("Esc");
         let btn_quit = ButtonDef {
             x: 230,
             y: 370,
             w: 340,
             h: 50,
-            text: "[ESC] QUIT GAME".to_string(),
+            text: format!("[{}] QUIT GAME", exit),
         };
 
         let btn_key_bindings = ButtonDef {
@@ -216,12 +217,14 @@ impl Menu {
             h: 60,
             text: "[1] SAVE MAP INDEX".to_string(),
         };
+
+        let exit = game.bindings.get_key_to_action("EXIT").map(String::as_str).unwrap_or("Esc");
         let btn_menu = ButtonDef {
             x: 230,
             y: 300,
             w: 340,
             h: 60,
-            text: "[ESC] MAIN MENU".to_string(),
+            text: format!("[{}] MAIN MENU", exit),
         };
 
         let btn_key_bindings = ButtonDef {
@@ -304,12 +307,14 @@ impl Menu {
             h: 50,
             text: audio_text.to_string(),
         };
+
+        let exit = game.bindings.get_key_to_action("EXIT").map(String::as_str).unwrap_or("Esc");
         let btn_menu = ButtonDef {
             x: 230,
             y: 330,
             w: 340,
             h: 50,
-            text: "[ESC] MAIN MENU".to_string(),
+            text: format!("[{}] MAIN MENU", exit),
         };
 
         let btn_key_bindings = ButtonDef {
@@ -355,8 +360,6 @@ impl Menu {
         buffer: &mut [u32],
         game: &mut Game,
         keys_pressed: &[minifb::Key],
-        //renderer_data: &RendererData,
-        //audio: &mut Audio,
         ) -> AppState {
             // Clear the buffer from the previous frame
             buffer.fill(COL_BG_MAIN);
@@ -377,9 +380,6 @@ impl Menu {
                     }
 
                     self.waiting_for_key = None;
-                }
-                else {
-                    //self.waiting_for_key = Some(action.clone());
                 }
             }
 
@@ -407,7 +407,7 @@ impl Menu {
             let mut counter = 1;
 
             let mut y_pos = 150;
-            let y_distace = 40;
+            let y_distace = 35;
             let mut x_pos = 20;
             let x_distance = 400;
 
@@ -445,10 +445,10 @@ impl Menu {
 
                 y_pos += y_distace;
 
-                if counter > 9 {
+                if counter > 10 {
                     counter = 1;
                     x_pos += x_distance;
-                    y_pos -= 9 * y_distace;
+                    y_pos -= 10 * y_distace;
                 }
             }
 
